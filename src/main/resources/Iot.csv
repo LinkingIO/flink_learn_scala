@@ -1,0 +1,131 @@
+
+create table course 
+(num int,course string) 
+row format delimited fields terminated by ',';
+
+1,数据库
+ 
+create table student 
+(id int , name string , sex string ,age int , deparment string) 
+row format delimited fields terminated by ',';
+
+95002,刘晨,女,19,IS
+
+create table studentcourse 
+(id int,num int,score int) 
+row format delimited fields terminated by ',';
+
+95001,1,81
+
+查询选修了课程的学生姓名
+
+create table id_course as 
+    select
+        sc.id id,
+        c.course course
+    from
+        course c
+    inner join studentcourse sc
+    on c.num = sc.num;
+
+select
+    id_course.course course,
+    student.name name
+from 
+ id_course
+join 
+ student
+on 
+ id_course.id = student.id;
+
+select
+student.name name,
+id_stu.course course
+from
+(
+    select
+        sc.id id,
+        c.course course
+    from
+        course c
+    inner join studentcourse sc
+    on c.num = sc.num
+) id_stu
+join
+    student
+on id_stu.id = student.id;
+
+
+第二题：hive的group by 和集合函数
+
+计算1号课程的学生平均成绩
+select
+    num,
+    avg(score) av_sc
+from 
+studentcourse
+where num = 1
+group by num;
+
+
+查询各科成绩平均分
+
+select
+ num,
+ avg(score)
+from
+studentcourse
+group by num
+
+
+select
+    course,
+    avg(score)
+from
+(
+    select 
+        sc.score score,
+        c.course course
+    from 
+    studentcourse sc
+    join
+    course c
+    on sc.num = c.num
+) sc_c
+group by sc_c.course;
+
+查询选修1号课程的学生最高分数
+
+select
+    max(score)
+from
+(
+select 
+    s.name,
+    sc.num,
+    sc.score
+from student s
+join studentcourse  sc
+on s.id = sc.id
+) stu_cour
+where stu_cour.num = 1
+group by stu_cour.num;
+
+
+各个课程号及相应的选课人数
+
+select 
+    num,
+    count(id)
+from 
+ studentcourse
+group by num;
+
+（6）查询选修了3门以上的课程的学生学号
+
+select 
+    id,
+    
+from
+studentcourse
+group by id
